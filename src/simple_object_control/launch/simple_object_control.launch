@@ -1,0 +1,16 @@
+<launch>
+  <!-- Load the URDF model -->
+  <param name="robot_description" textfile="$(find simple_object_control)/urdf/simple_object.urdf" />
+  <!-- Publish the robot state -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+
+  <!-- Launch rviz -->
+  <node name="map_server" pkg="map_server" type="map_server" args="$(find simple_object_control)/maps/map.yaml" />
+  <node name="rviz" pkg="rviz" type="rviz"  args="-d $(find simple_object_control)/rviz/simple_object.rviz" />
+
+  <node name="simple_object_control" pkg="simple_object_control" type="simple_object_control.py" output="screen" />
+
+  <node name="teleop_twist_keyboard" pkg="teleop_twist_keyboard" type="teleop_twist_keyboard.py" output="screen">
+    <remap from="cmd_vel" to="/cmd_vel" />
+  </node>
+</launch>
