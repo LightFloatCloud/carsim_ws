@@ -1,0 +1,24 @@
+# TrajectoryPlannerROS:
+#   max_vel_x: 0.5
+#   min_vel_x: 0.1
+#   max_rotational_vel: 1.0
+#   min_rotational_vel: 0.4
+#   acc_lim_x: 2.5
+#   acc_lim_theta: 3.2
+#   xy_goal_tolerance: 0.1
+#   yaw_goal_tolerance: 0.1
+#   pdist_scale: 0.6
+#   gdist_scale: 0.8
+#   meter_scoring: true
+AckermannPlannerROS:
+  max_vel_x: 0.5
+  min_vel_x: 0.1
+  max_steering_angle: 0.5  # 最大转向角度（弧度）
+  min_steering_angle: -0.5 # 最小转向角度（弧度）
+  acc_lim_x: 2.5
+  acc_lim_theta: 3.2
+  xy_goal_tolerance: 0.1
+  yaw_goal_tolerance: 0.1
+  pdist_scale: 0.6
+  gdist_scale: 0.8
+  meter_scoring: true
