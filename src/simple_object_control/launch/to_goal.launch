@@ -22,8 +22,8 @@
     <rosparam file="$(find simple_object_control)/config/global_costmap_params.yaml" command="load" />
     <param name="base_local_planner" value="teb_local_planner/TebLocalPlannerROS" />
     <rosparam file="$(find simple_object_control)/config/teb_local_planner_params.yaml" command="load" />
-    
   </node>
-  
+
+  <node name="send_goal_node" pkg="simple_object_control" type="send_goal.py" output="screen" />
 
 </launch>
