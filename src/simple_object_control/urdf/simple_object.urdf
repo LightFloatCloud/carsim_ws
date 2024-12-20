@@ -3,11 +3,13 @@
   <link name="base_link">
     <visual>
       <geometry>
-        <box size="0.5 0.5 0.5"/>
+        <box size="0.6 0.4 0.3"/>
       </geometry>
       <material name="blue">
         <color rgba="0 0 1 1"/>
       </material>
+      <!-- 调整原点，使立方体的底部中心为 base_link -->
+      <origin xyz="0 0 0.15" rpy="0 0 0"/>
     </visual>
   </link>
 </robot>

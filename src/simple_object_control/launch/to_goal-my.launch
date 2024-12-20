@@ -10,7 +10,7 @@
   <!-- 发布 map 到 odom 的静态变换 -->
   <node pkg="tf" type="static_transform_publisher" name="map_to_odom_broadcaster" args="0 0 0 0 0 0 1 map odom 100" />
 
-  <!-- <node name="simple_object_control" pkg="simple_object_control" type="simple_object_control.py" output="screen" /> -->
+  <node name="simple_object_control" pkg="simple_object_control" type="simple_object_control.py" output="screen" />
 
   <!-- Launch move_base -->
   <node name="move_base" pkg="move_base" type="move_base" respawn="false" output="screen">

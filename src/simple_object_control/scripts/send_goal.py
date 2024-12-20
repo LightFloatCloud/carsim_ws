@@ -63,11 +63,11 @@ def start_circling():
     # 发布速度命令，让机器人绕圈
     rate = rospy.Rate(10)  # 10 Hz
     rospy.loginfo("Starting to circle...")
-    per_90_num = 0
+    
     # 在最开始停 1 秒
     rospy.loginfo("Initial pause for 1 second...")
     rospy.sleep(STOP_TIME)
-    per_90_num = per_90_num + 1
+    per_90_num = 0
 
     start_time = rospy.Time.now()  # 开始绕圈的初始时间
     last_90_degree_time = start_time  # 上一次转过 90 度的时间

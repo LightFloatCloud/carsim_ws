@@ -41,7 +41,7 @@ class SimpleObjectControl:
             # 创建变换消息
             t = geometry_msgs.msg.TransformStamped()
             t.header.stamp = rospy.Time.now()
-            t.header.frame_id = "map"
+            t.header.frame_id = "odom"
             t.child_frame_id = "base_link"
             t.transform.translation.x = self.position[0]
             t.transform.translation.y = self.position[1]
