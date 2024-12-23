@@ -77,8 +77,10 @@ def start_circling():
     # 计算每转过 90 度所需的角度变化
     angle_per_90_degrees = math.pi / 2  # 90 度对应的角度变化
 
-
-
+    # 初始化变量
+    last_yaw = initial_yaw_angle
+    total_angle_diff = 0.0
+    per_90_num = 0
 
     # 发布速度命令，让机器人绕圈
     rate = rospy.Rate(10)  # 10 Hz
@@ -86,12 +88,7 @@ def start_circling():
     
     # 在最开始停 1 秒
     rospy.loginfo("Initial pause for 1 second...")
-    current_yaw = initial_yaw_angle
     rospy.sleep(STOP_TIME)
-    per_90_num = 0
-
-    start_time = rospy.Time.now()  # 开始绕圈的初始时间
-    last_90_degree_time = start_time  # 上一次转过 90 度的时间
 
     while not rospy.is_shutdown():
         try:
@@ -105,20 +102,27 @@ def start_circling():
             rospy.logerr(f"TF lookup failed: {e}")
             continue
 
-        # 计算当前方向与初始方向的差值
-        angle_diff = current_yaw - initial_yaw_angle
-        angle_diff = (angle_diff + math.pi) % (2 * math.pi) - math.pi  # 归一化到 [-pi, pi]
+        # 计算与上一次 yaw 的差值
+        delta = current_yaw - last_yaw
 
+        # 处理角度跳跃
+        if delta > math.pi:
+            delta -= 2 * math.pi
+        elif delta < -math.pi:
+            delta += 2 * math.pi
 
+        # 累加总的旋转角度
+        total_angle_diff += delta
 
+        # 更新 last_yaw
+        last_yaw = current_yaw
 
         # 检查是否转过 90 度
-        if (rospy.Time.now() - last_90_degree_time).to_sec() >= time_per_90_degrees:
-            rospy.loginfo("Reached 90 degrees. Stopping for 1 second...")
+        if total_angle_diff >= per_90_num * angle_per_90_degrees:
+            rospy.loginfo(f"Reached {per_90_num * 90} degrees. Stopping for 1 second...")
             stop_robot(cmd_vel_pub)  # 停止机器人
             rospy.sleep(STOP_TIME)  # 停 1 秒
-            per_90_num = per_90_num + 1
-            last_90_degree_time = rospy.Time.now()  # 更新上一次转过 90 度的时间
+            per_90_num += 1
             rospy.loginfo("Resuming circling...")
             
             # 检查是否绕完一圈
@@ -151,6 +155,7 @@ def wait_for_input():
             if move_to_goal(x, y):
                 # 如果目标成功到达，开始绕圈
                 start_circling()
+                break
             else:
                 rospy.loginfo("Failed to reach goal. Please try again.")
         except ValueError:
