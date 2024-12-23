@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <robot name="simple_object">
-  <link name="base_link">
+  <link name="body">
     <visual>
       <geometry>
         <box size="0.6 0.4 0.3"/>

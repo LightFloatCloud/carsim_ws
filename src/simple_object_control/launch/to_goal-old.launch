@@ -1,0 +1,31 @@
+<launch>
+  <!-- Load the URDF model -->
+  <param name="robot_description" textfile="$(find simple_object_control)/urdf/simple_object.urdf" />
+  <!-- Publish the robot state -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+
+  <!-- Launch rviz -->
+  <node name="map_server" pkg="map_server" type="map_server" args="$(find simple_object_control)/maps/map.yaml" />
+  <node name="rviz" pkg="rviz" type="rviz"  args="-d $(find simple_object_control)/rviz/simple_object.rviz" />
+  <!-- 发布 map 到 odom 的静态变换 -->
+  <node pkg="tf" type="static_transform_publisher" name="map_to_odom_broadcaster" args="0 0 0 0 0 0 1 map odom 100" />
+
+  <!-- <node name="simple_object_control" pkg="simple_object_control" type="simple_object_control.py" output="screen" /> -->
+
+  <!-- Launch move_base -->
+  <node name="move_base" pkg="move_base" type="move_base" respawn="false" output="screen">
+    <rosparam file="$(find simple_object_control)/config/costmap_common_params.yaml" command="load" ns="global_costmap" />
+    <rosparam file="$(find simple_object_control)/config/costmap_common_params.yaml" command="load" ns="local_costmap" />
+    <rosparam file="$(find simple_object_control)/config/local_costmap_params.yaml" command="load" />
+    <rosparam file="$(find simple_object_control)/config/global_costmap_params.yaml" command="load" />
+    <!-- <rosparam file="$(find simple_object_control)/config/base_local_planner_params.yaml" command="load" /> -->
+
+    <param name="base_global_planner" value="global_planner/GlobalPlanner" /> 
+    <rosparam file="$(find simple_object_control)/config/global_costmap_params.yaml" command="load" />
+    <param name="base_local_planner" value="teb_local_planner/TebLocalPlannerROS" />
+    <rosparam file="$(find simple_object_control)/config/teb_local_planner_params.yaml" command="load" />
+  </node>
+
+  <node name="send_goal_node" pkg="simple_object_control" type="send_goal.py" output="screen" />
+
+</launch>
