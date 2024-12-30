@@ -5,15 +5,13 @@
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
 
   <!-- Launch rviz -->
-  <!-- <node name="map_server" pkg="map_server" type="map_server" args="$(find simple_object_control)/maps/map.yaml" /> -->
-  <!-- <node name="rviz" pkg="rviz" type="rviz"  args="-d $(find simple_object_control)/rviz/simple_object.rviz" /> -->
-  <!-- 发布 map 到 odom 的静态变换 -->
-  <node pkg="tf" type="static_transform_publisher" name="map_to_odom_broadcaster" args="0 0 0 0 0 0 1 map odom 100" />
+  <node name="map_server" pkg="map_server" type="map_server" args="$(find simple_object_control)/maps/map.yaml" />
+  <node name="rviz" pkg="rviz" type="rviz"  args="-d $(find simple_object_control)/rviz/simple_object.rviz" />
 
-  <!-- <node name="simple_object_control" pkg="simple_object_control" type="simple_object_control.py" output="screen" /> -->
+  <node name="simple_object_control" pkg="simple_object_control" type="simple_object_control.py" output="screen" />
 
   <!-- Launch move_base -->
-  <node name="move_base" pkg="move_base" type="move_base" respawn="false" output="screen" args="/map:=projected_map">
+  <node name="move_base" pkg="move_base" type="move_base" respawn="false" output="screen">
     <rosparam file="$(find simple_object_control)/config/costmap_common_params.yaml" command="load" ns="global_costmap" />
     <rosparam file="$(find simple_object_control)/config/costmap_common_params.yaml" command="load" ns="local_costmap" />
     <rosparam file="$(find simple_object_control)/config/local_costmap_params.yaml" command="load" />
@@ -26,12 +24,6 @@
     <rosparam file="$(find simple_object_control)/config/teb_local_planner_params.yaml" command="load" />
   </node>
 
-  <include file="$(find fast_lio_localization)/launch/sentry_localize.launch"> </include>
-
-  <!-- 延迟 4 秒启动 publish_initial_pose.py 节点 -->
-  <!-- <node pkg="fast_lio_localization" type="publish_initial_pose.py" name="publish_initial_pose" args="0 0 0 0 0 0"
-    launch-prefix="bash -c 'sleep 4; $0 $@'" /> -->
-  
   <node name="send_goal_node" pkg="simple_object_control" type="send_goal.py" output="screen" />
 
 </launch>

@@ -4,6 +4,7 @@ import actionlib
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 from geometry_msgs.msg import Pose, Point, Quaternion, Twist
 import tf2_ros
+from tf.transformations import euler_from_quaternion
 import tf2_geometry_msgs
 import math
  
@@ -56,20 +57,24 @@ def start_circling():
     twist_msg.linear.x = LINEAR_SPEED  # 线速度
     twist_msg.angular.z = angular_speed  # 角速度（逆时针）
 
-    # 计算每转过 90 度所需的时间
-    # time_per_90_degrees = (math.pi / 2) / angular_speed  # 90 度对应的时间
-    # 计算绕一圈所需的时间
-    # time_to_circle = (2 * math.pi) / angular_speed  # 一圈对应的时间
-
     # 初始化 TF 缓冲区和监听器
     tf_buffer = tf2_ros.Buffer()
     tf_listener = tf2_ros.TransformListener(tf_buffer)
     # 获取初始方向（yaw 角）
     try:
+        
         # 获取 body 在 map 中的初始方向
         transform = tf_buffer.lookup_transform("map", "body", rospy.Time(0), rospy.Duration(5.0))
-        initial_yaw = tf2_geometry_msgs.transform_to_pose(transform).orientation
-        initial_yaw_angle = euler_from_quaternion([initial_yaw.x, initial_yaw.y, initial_yaw.z, initial_yaw.w])[2]
+
+        # 手动创建一个 Pose 消息并设置其 orientation
+        initial_pose = Pose()
+        initial_pose.orientation = transform.transform.rotation
+        # 将四元数转换为欧拉角以获取 yaw 角度
+        initial_yaw_angle = euler_from_quaternion([initial_pose.orientation.x,
+                                                   initial_pose.orientation.y,
+                                                   initial_pose.orientation.z,
+                                                   initial_pose.orientation.w])[2]
+
     except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException) as e:
         rospy.logerr(f"TF lookup failed: {e}")
         return
@@ -89,6 +94,7 @@ def start_circling():
     # 在最开始停 1 秒
     rospy.loginfo("Initial pause for 1 second...")
     rospy.sleep(STOP_TIME)
+    per_90_num += 1
 
     while not rospy.is_shutdown():
         try:
@@ -126,7 +132,7 @@ def start_circling():
             rospy.loginfo("Resuming circling...")
             
             # 检查是否绕完一圈
-            if per_90_num >= 4:
+            if per_90_num > 4:
                 rospy.loginfo("Finished circling one full loop.")
                 break
 
